@@ -3,26 +3,29 @@ import pathway as pw
 from transformers import pipeline
 import google.generativeai as genai
 from dotenv import load_dotenv
+import subprocess
+import threading
+
 load_dotenv()  
 
-# ======================
+
 # Gemini Setup
-# ======================
+
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 gemini_model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
 
-# ======================
+
 # Hugging Face Model
-# ======================
+
 classifier = pipeline(
     "text-classification",
     model="distilbert-base-uncased-finetuned-sst-2-english"
 )
 
-# ======================
+
 # Log Classification
-# ======================
+
 def classify_log(line: str) -> str:
     """Classify a log line as normal, warning, or critical."""
     if not line.strip():
@@ -37,9 +40,9 @@ def classify_log(line: str) -> str:
     else:
         return "normal"
 
-# ======================
+
 # Gemini Explanation
-# ======================
+
 def explain_with_gemini(log: str, classification: str) -> str:
     """Ask Gemini to explain and suggest a fix."""
     if classification == "normal":
@@ -61,17 +64,9 @@ If possible, include preventive measures.
     except Exception as e:
         return f"⚠️ Gemini explanation failed: {e}"
 
-# ======================
-# Stream Logs from Folder
-# ======================
-# logs = pw.io.fs.read(
-#     path="./logs/",
-#     format="plaintext",
-#     mode="streaming"
-# )
 
-import subprocess
-import threading
+# Stream Logs from Folder
+
 
 def stream_system_logs():
     """Continuously copy system logs into ./logs/live.log"""
@@ -93,9 +88,8 @@ logs = pw.io.fs.read(
 )
 
 
-# ======================
 # Apply ML + Gemini
-# ======================
+
 classified_logs = logs.select(
     log=logs.data,
     classification=pw.apply(classify_log, logs.data),
@@ -108,16 +102,16 @@ enhanced_logs = classified_logs.select(
     explanation=pw.apply(explain_with_gemini, classified_logs.log, classified_logs.classification)
 )
 
-# ======================
+
 # Save to JSON output
-# ======================
+
 pw.io.fs.write(
     enhanced_logs,
     "./alerts/enhanced_logs.json",
     format="json"
 )
 
-# ======================
+
 # Run the Streaming Pipeline
-# ======================
+
 pw.run()
