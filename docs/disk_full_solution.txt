@@ -1,0 +1,4 @@
+If you encounter "Disk full" or "No space left on device" errors:
+1. Run 'df -h' to check disk usage
+2. Clean temporary files or logs
+3. Move large unused files to archive storage

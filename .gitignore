@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+*poojan/
+*.env
+# Logs and outputs
+logs/
+alerts/
+
+**/poojan
+
+/poojan/
+/poojan
+
+# IDE
+.vscode/
+.DS_Store
+
+/node_modules/
+/dist
+/build
+.env
+*.log
+*.sqlite3

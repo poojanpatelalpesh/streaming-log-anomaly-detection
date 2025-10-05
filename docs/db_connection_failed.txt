@@ -1,0 +1,5 @@
+If you see database connection errors, verify:
+1. Database credentials (username, password)
+2. The database server is reachable (ping or telnet)
+3. Firewall allows access to the DB port (e.g., 5432 for Postgres)
+4. Restart DB service if needed
